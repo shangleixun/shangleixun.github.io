@@ -83,7 +83,7 @@
 <meta property="og:site_name" content="shallowater 浅水">
 <meta property="og:description" content="心血来潮，终于想依托 Github 创建一个个人博客网站。想到之前看过的教程，感觉头皮发麻，有一丝胆怯，最后硬着头皮做了下来。结果差强人意，不过是可以来写博客了而已。 总体上来说，分三步： 第一步：在 GitHub 上建立专门为博客网站的 repo 。流程极简单，在 GitHub 个人主页，创建新的 repo ，有一点要注意，如果是第一次创建 *.github.io 类的 repo ，repo n">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-05T10:17:18.115Z">
+<meta property="og:updated_time" content="2019-09-05T10:23:56.652Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="简明的 GitHub 个人博客搭建教程">
 <meta name="twitter:description" content="心血来潮，终于想依托 Github 创建一个个人博客网站。想到之前看过的教程，感觉头皮发麻，有一丝胆怯，最后硬着头皮做了下来。结果差强人意，不过是可以来写博客了而已。 总体上来说，分三步： 第一步：在 GitHub 上建立专门为博客网站的 repo 。流程极简单，在 GitHub 个人主页，创建新的 repo ，有一点要注意，如果是第一次创建 *.github.io 类的 repo ，repo n">
@@ -299,26 +299,26 @@
         <p>心血来潮，终于想依托 Github 创建一个个人博客网站。想到之前看过的教程，感觉头皮发麻，有一丝胆怯，最后硬着头皮做了下来。结果差强人意，不过是可以来写博客了而已。</p>
 <p>总体上来说，分三步：</p>
 <h3 id="第一步：在-GitHub-上建立专门为博客网站的-repo-。"><a href="#第一步：在-GitHub-上建立专门为博客网站的-repo-。" class="headerlink" title="第一步：在 GitHub 上建立专门为博客网站的 repo 。"></a>第一步：在 GitHub 上建立专门为博客网站的 repo 。</h3><p>流程极简单，在 GitHub 个人主页，创建新的 repo ，有一点要注意，如果是第一次创建 *.github.io 类的 repo ，repo name 必须以用户名为前缀，不然会失败。<br>repo 的名称应该是：username.github.io 。其他默认就好了。</p>
-<h3 id="第二步：在个人电脑上安装-Node-js-，Git-，以及-Hexo-。"><a href="#第二步：在个人电脑上安装-Node-js-，Git-，以及-Hexo-。" class="headerlink" title="第二步：在个人电脑上安装 Node.js ，Git ，以及 Hexo 。"></a>第二步：在个人电脑上安装 Node.js ，Git ，以及 Hexo 。</h3><p>使用 macOS 的用户，应该是极方便的，只用安装 Node.js 就可以了。安装方法，我是直接在官网下载稳定包，安装就完事。<br>安装 hexo 的命令行如下：</p>
+<h3 id="第二步：在电脑上安装-Node-js-，Git-，以及-Hexo-。"><a href="#第二步：在电脑上安装-Node-js-，Git-，以及-Hexo-。" class="headerlink" title="第二步：在电脑上安装 Node.js ，Git ，以及 Hexo 。"></a>第二步：在电脑上安装 Node.js ，Git ，以及 Hexo 。</h3><p>使用 macOS 的用户，应该是极方便的，只用安装 Node.js 就可以了。安装方法，我是直接在官网下载稳定包，安装就完事。<br>安装 hexo 的命令行如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
 
 <p>macOS 如果提示没有写入权限，可以用</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo chown -R <span class="variable">$USER</span> /usr/<span class="built_in">local</span></span><br></pre></td></tr></table></figure>
 
 <p>来获取 /usr/local 目录的写入权限。</p>
-<h3 id="第三步：在电脑端建立新的空文件夹，并使用-hexo-初始化。"><a href="#第三步：在电脑端建立新的空文件夹，并使用-hexo-初始化。" class="headerlink" title="第三步：在电脑端建立新的空文件夹，并使用 hexo 初始化。"></a>第三步：在电脑端建立新的空文件夹，并使用 hexo 初始化。</h3><p>到这里要停一下，因为我在这里吃了苦头，后来导致重来一遍。<br>在电脑上，建立一个 username.github.io 的文件夹（其实名称不重要，关键是见名知义）。打开终端，进入当前文件夹。执行 </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo init</span><br></pre></td></tr></table></figure>
+<h3 id="第三步：在电脑端创建新的空文件夹，并使用-Hexo-初始化。"><a href="#第三步：在电脑端创建新的空文件夹，并使用-Hexo-初始化。" class="headerlink" title="第三步：在电脑端创建新的空文件夹，并使用 Hexo 初始化。"></a>第三步：在电脑端创建新的空文件夹，并使用 Hexo 初始化。</h3><p>到这里要停一下，因为我在这里吃了苦头，后来导致重来一遍。<br>在电脑上，建立一个 username.github.io 的文件夹（其实名称不重要，关键是见名知义）。打开终端，进入当前文件夹。执行 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo init // 此命令必须在新的空文件夹中执行。</span><br></pre></td></tr></table></figure>
 
-<p>的命令。<br>这个命令执行完成后，打开文件夹查看，里面会有好几个文件夹，和一些零散的文件，目前你只需要关注一个叫做 _config.yml 的文件，它在根目录中，它的相关配置决定了稍后你能否将本地内容推送到远程的 username.github.io 仓库，并且在 username.github.io 这个网页中，打开查看 hexo 默认为你的博客撰写的一条叫 hello world 的博文。</p>
+<p>的命令。<br>这个命令执行完成后，打开文件夹查看，里面会有好几个文件夹，和一些零散的文件，目前你只需要关注一个叫做 _config.yml 的文件，它在根目录中，它的相关配置决定了稍后你能否将本地内容推送到远程的 username.github.io 仓库，并且在 username.github.io 这个网页中，打开查看 Hexo 默认为你的博客撰写的一条叫 hello world 的博文。</p>
 <p>打开 _config.yml ，在最下方的 deploy 处，修改 type 为 git ，另外添加两个字段：<br>repo: <a href="https://github.com/username/username.github.io.git" target="_blank" rel="noopener">https://github.com/username/username.github.io.git</a> 及<br>branch: master 。</p>
-<p>然后执行这个命令，以在当前文件夹中安装布署工具：</p>
+<p>然后执行这个命令，安装布署工具：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
 
 <p>再执行下面三条命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ hexo clean // 清理。</span><br><span class="line">$ hexo g // g 是 generate 的缩写。</span><br><span class="line">$ hexo d // d 为 deploy 的缩写。</span><br></pre></td></tr></table></figure>
 
-<p>在执行布署命令时，会要求你输入你的 github 用户名和密码，直接输入就好了。<br>布署成功后，你应当就可以在 username.github.io 中看到 hexo 默认的博文：hello world 了。</p>
-<p>hexo 的配置之类，是很丰富的，可查看参阅的第二条链接。</p>
+<p>在执行布署命令时，会要求你输入你的 GitHub 用户名和密码，直接输入就好了。<br>布署成功后，你应当就可以在 username.github.io 中看到 Hexo 为你撰写的默认博文 hello world 了。</p>
+<p>Hexo 的配置之类，是很丰富的，可查看参阅的第二条链接。</p>
 <h3 id="参阅："><a href="#参阅：" class="headerlink" title="参阅："></a>参阅：</h3><p>1 <a href="https://pages.github.com" target="_blank" rel="noopener">github pages</a>；<br>2 <a href="https://hexo.io/zh-cn/docs/" target="_blank" rel="noopener">hexo 官方中文文档</a>；<br>2 <a href="https://xuanwo.io/2015/03/26/hexo-intor/" target="_blank" rel="noopener">史上最详细的 Hexo 博客搭建图文教程</a>；<br>3 <a href="https://zhuanlan.zhihu.com/p/26625249" target="_blank" rel="noopener">GitHub+Hexo 搭建个人网站详细教程</a>（本链接强烈推荐，细致、有效）。</p>
 <p>九月五日 1804</p>
 
@@ -466,7 +466,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一步：在-GitHub-上建立专门为博客网站的-repo-。"><span class="nav-number">1.</span> <span class="nav-text">第一步：在 GitHub 上建立专门为博客网站的 repo 。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二步：在个人电脑上安装-Node-js-，Git-，以及-Hexo-。"><span class="nav-number">2.</span> <span class="nav-text">第二步：在个人电脑上安装 Node.js ，Git ，以及 Hexo 。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三步：在电脑端建立新的空文件夹，并使用-hexo-初始化。"><span class="nav-number">3.</span> <span class="nav-text">第三步：在电脑端建立新的空文件夹，并使用 hexo 初始化。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参阅："><span class="nav-number">4.</span> <span class="nav-text">参阅：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一步：在-GitHub-上建立专门为博客网站的-repo-。"><span class="nav-number">1.</span> <span class="nav-text">第一步：在 GitHub 上建立专门为博客网站的 repo 。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二步：在电脑上安装-Node-js-，Git-，以及-Hexo-。"><span class="nav-number">2.</span> <span class="nav-text">第二步：在电脑上安装 Node.js ，Git ，以及 Hexo 。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三步：在电脑端创建新的空文件夹，并使用-Hexo-初始化。"><span class="nav-number">3.</span> <span class="nav-text">第三步：在电脑端创建新的空文件夹，并使用 Hexo 初始化。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参阅："><span class="nav-number">4.</span> <span class="nav-text">参阅：</span></a></li></ol></div>
             
 
           </div>
