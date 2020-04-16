@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="尚雷勋">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="尚雷勋">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="一个普通的 iOS 开发者。">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>在 Swift 中使用 JSON —— 翻译 · shallowater&#39;s Studio</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href="/assets/favicon.ico">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js" as="script">
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >shallowater&#39;s Studio.</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">在 Swift 中使用 JSON —— 翻译</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>shallowater's Studio.</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            在 Swift 中使用 JSON —— 翻译
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "swift">swift</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">2.4k</span>阅读时长: <span class="post-count reading-time">10 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2020/04/16</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <p>如果你的 app 同一个 web 应用程序进行通信，则从服务器返回的信息常被格式化为 <a href="https://www.json.org/json-en.html" target="_blank" rel="noopener">JSON</a> 。 你可以使用 Foundation 框架的 <a href="https://developer.apple.com/documentation/foundation/nsjsonserialization" target="_blank" rel="noopener">JSONSerialization</a> 类将 JSON 转换为 Swift 数据类型，如 <code>Dictionary</code>，<code>Array</code>，<code>String</code>，<code>Number</code> 和 <code>Bool</code> 等。 但是，因为你不能确定你的 app 接收到的 JSON 的结构或值（是什么样子的），所以正确地反序列化模型对象可能就有些挑战。 本篇博文描述了几种你可以采用的方法，当你在你的 app 中使用 JSON 时。</p>
+<h2 id="从-JSON-中提取值"><a href="#从-JSON-中提取值" class="headerlink" title="从 JSON 中提取值"></a>从 JSON 中提取值</h2><p><code>JSONSerialization</code> 的类方法 <code>jsonObject(with:options:)</code> 返回类型为 <code>Any</code> 的值，如果数据不能解析，则抛出一个错误。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Foundation</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> data: <span class="type">Data</span> <span class="comment">// 从网络请求中接收到的数据，比如</span></span><br><span class="line"><span class="keyword">let</span> json = <span class="keyword">try</span>? <span class="type">JSONSerialization</span>.jsonObject(with: data, options: [])</span><br></pre></td></tr></table></figure>
+
+<p>虽然有效的 JSON <a href="http://www.ecma-international.org/publications/standards/Ecma-404.htm" target="_blank" rel="noopener">可能只包含一个值</a>，但来自 web 应用程序的响应通常会将一个对象或数组编码为顶层对象。你可以使用可选绑定和在 <code>if</code> 或 <code>guard</code> 语句中的 <code>as?</code> 类型转换运算符，提取一个已知类型的值为常量。要从一个 JSON 对象类型中获取 <code>Dictionary</code> 值，有条件地将它转换成 <code>[String: Any]</code> 。要从一个 JSON 数组类型中获取 <code>Array</code> 值，有条件地将其转换为 <code>[Any]</code> （或一个有更具体的元素类型的数组，如 <code>[String]</code> ）。 你可以使用带下标访问器的类型转换可选绑定或带枚举的模式匹配，来按键提取字典值或按索引提取数组值。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Example JSON with object root:</span></span><br><span class="line"><span class="comment">// 根是对象的 JSON 例子：</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">	&#123;</span></span><br><span class="line"><span class="comment">		"someKey": 42.0,</span></span><br><span class="line"><span class="comment">		"anotherKey": &#123;</span></span><br><span class="line"><span class="comment">			"someNestedKey": true</span></span><br><span class="line"><span class="comment">		&#125;</span></span><br><span class="line"><span class="comment">	&#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> dictionary = jsonWithObjectRoot <span class="keyword">as</span>? [<span class="type">String</span>: <span class="type">Any</span>] &#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="keyword">let</span> number = dictionary[<span class="string">"someKey"</span>] <span class="keyword">as</span>? <span class="type">Double</span> &#123;</span><br><span class="line">		<span class="comment">// access individual value in dictionary</span></span><br><span class="line">		<span class="comment">// 获取字典中的单个的值</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (key, value) <span class="keyword">in</span> dictionary &#123;</span><br><span class="line">		<span class="comment">// access all key / value pairs in dictionary</span></span><br><span class="line">		<span class="comment">// 获取字典中所有的键/值对</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> <span class="keyword">let</span> nestedDictionary = dictionary[<span class="string">"anotherKey"</span>] <span class="keyword">as</span>? [<span class="type">String</span>: <span class="type">Any</span>] &#123;</span><br><span class="line">		<span class="comment">// access nested dictionary values by key</span></span><br><span class="line">		<span class="comment">// 用键获取嵌套的字典值</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Example JSON with array root:</span></span><br><span class="line"><span class="comment">// 根是数组的 JSON 例子：</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">	[</span></span><br><span class="line"><span class="comment">		"hello", 3, true</span></span><br><span class="line"><span class="comment">	]</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> array = jsonWithArrayRoot <span class="keyword">as</span>? [<span class="type">Any</span>] &#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="keyword">let</span> firstObject = array.first &#123;</span><br><span class="line">		<span class="comment">// access individual object in array</span></span><br><span class="line">		<span class="comment">// 获取数组中的单个的值</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> object <span class="keyword">in</span> array &#123;</span><br><span class="line">		<span class="comment">// access all objects in array</span></span><br><span class="line">		<span class="comment">// 获取字典中所有的对象</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> <span class="keyword">case</span> <span class="keyword">let</span> string <span class="keyword">as</span> <span class="type">String</span> <span class="keyword">in</span> array &#123;</span><br><span class="line">		<span class="comment">// access only string values in array</span></span><br><span class="line">		<span class="comment">// 只获取字典中的 String 值</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Swift 的内建语言功能使安全地提取和使用 JSON 数据变得简单 —— 用 Foundation 的 API 来解码而无需外部的库或框架。</p>
+<h2 id="使用从-JSON-提取的值创建-model-对象"><a href="#使用从-JSON-提取的值创建-model-对象" class="headerlink" title="使用从 JSON 提取的值创建 model 对象"></a>使用从 JSON 提取的值创建 model 对象</h2><p>因为大多数的 Swift app 遵循 <a href="https://developer.apple.com/library/archive/documentation/General/Conceptual/DevPedia-CocoaCore/MVC.html" target="_blank" rel="noopener">Model-View-Controller</a> 的设计模式，通常来说，将 JSON 数据转换为适用于你的 app 的域的 model 定义的对象，是有用的。</p>
+<p>比如，当编写一个提供本地的餐馆的搜索结果的 app ，你可能会实现一个 <code>Restaurant</code> 的 model ，它有一个初始化器，接收 JSON 对象，且有一个类方法来向服务器的 <code>/search</code> 端点做 HTTP 请求，然后异步地返回一个（元素是） <code>Restaurant</code> 对象的数组。<br>考虑下面的 <code>Restaurant</code> model：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Foundation</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Restaurant</span> </span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">enum</span> <span class="title">Meal</span>: <span class="title">String</span> </span>&#123;</span><br><span class="line">		<span class="keyword">case</span> breakfast, lunch, dinner</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">let</span> name: <span class="type">String</span></span><br><span class="line">	<span class="comment">// 注：这里应该是 coordinate ，因为下文赋值时，并没有使用 location </span></span><br><span class="line">	<span class="keyword">let</span> location: (latitude: <span class="type">Double</span>, longitude: <span class="type">Double</span>)</span><br><span class="line">	<span class="keyword">let</span> meals: <span class="type">Set</span>&lt;<span class="type">Meal</span>&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Restaurant</code> 有一个类型为 <code>String</code> 的 <code>name</code> ，一个表示坐标对的 <code>location</code> ，和一个名为 <code>meals</code> 的 <code>Set</code> 包含着嵌套的 <code>Meal</code> 枚举。<br>这里有一个例子，单一的 restaurant 如何在服务器的响应里面呈现的：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"name"</span>: <span class="string">"Caffè Macs"</span>,</span><br><span class="line">	<span class="attr">"coordinates"</span>: &#123;</span><br><span class="line">		<span class="attr">"lat"</span>: <span class="number">37.330576</span>,</span><br><span class="line">		<span class="attr">"lng"</span>: <span class="number">-122.029739</span></span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="attr">"meals"</span>: [<span class="string">"breakfast"</span>, <span class="string">"lunch"</span>, <span class="string">"dinner"</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="编写一个可选的-JSON-初始化器"><a href="#编写一个可选的-JSON-初始化器" class="headerlink" title="编写一个可选的 JSON 初始化器"></a>编写一个可选的 JSON 初始化器</h2><p>要从 JSON representation （意思是表述，表现）转换为 <code>Restaurant</code> 对象，（需要）写一个初始化器，带一个从 JSON representation 提取和转换数据到属性值中的 <code>Any</code> 形参：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Restaurant</span> </span>&#123;</span><br><span class="line">	<span class="keyword">init</span>?(json: [<span class="type">String</span>: <span class="type">Any</span>]) &#123;</span><br><span class="line">		<span class="keyword">guard</span> <span class="keyword">let</span> name = json[<span class="string">"name"</span>] <span class="keyword">as</span>? <span class="type">String</span>,</span><br><span class="line">			<span class="keyword">let</span> coordinatesJSON = json[<span class="string">"coordinates"</span>] <span class="keyword">as</span>? [<span class="type">String</span>: <span class="type">Double</span>],</span><br><span class="line">			<span class="keyword">let</span> latitude = coordinatesJSON[<span class="string">"lat"</span>],</span><br><span class="line">			<span class="keyword">let</span> longitude = coordinatesJSON[<span class="string">"lng"</span>],</span><br><span class="line">			<span class="keyword">let</span> mealsJSON = json[<span class="string">"meals"</span>] <span class="keyword">as</span>? [<span class="type">String</span>]</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">var</span> meals: <span class="type">Set</span>&lt;<span class="type">Meal</span>&gt; = []</span><br><span class="line">		<span class="keyword">for</span> string <span class="keyword">in</span> mealsJSON &#123;</span><br><span class="line">			<span class="keyword">guard</span> <span class="keyword">let</span> meal = <span class="type">Meal</span>(rawValue: string) <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			meals.insert(meal)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">self</span>.name = name</span><br><span class="line">		<span class="keyword">self</span>.coordinates = (latitude, longitude)</span><br><span class="line">		<span class="keyword">self</span>.meals = meals</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果你的 app 和一个或多个 web 服务器通信，返回的并不是一个单一的，不变的 model 对象的 representation ，考虑实现多个初始化器来处理每个可能的 representation 。<br>上面的例子中，从传进来的 JSON 字典中提取出来的每个常量值，都使用了可选绑定和 <code>as?</code> 类型转换运算符。对 <code>name</code> 属性，提取出来的 <code>name</code> 值简单地标记为 as-is 。对 <code>coordinate</code> 属性，提取出来的 <code>latitude</code> 和 <code>longitude</code> 值在赋值之前，组合成了一个元组。对 <code>meals</code> 属性，提取出来的字符串值被遍历以构造一个（元素是） <code>Meal</code> 枚举值的 <code>Set</code> 。</p>
+<h2 id="编写一个带有错误处理的-JSON-的初始化器"><a href="#编写一个带有错误处理的-JSON-的初始化器" class="headerlink" title="编写一个带有错误处理的 JSON 的初始化器"></a>编写一个带有错误处理的 JSON 的初始化器</h2><p>前面的例子实现了一个可选初始化器，如果反序列化失败则返回 <code>nil</code> 。再一个，你可以定义一个遵照 <code>Error</code> 协议的类型，然后实现一个初始化器，在反序列化失败时抛出一个那个类型的错误。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">SerializationError</span>: <span class="title">Error</span> </span>&#123;</span><br><span class="line">	<span class="keyword">case</span> missing(<span class="type">String</span>)</span><br><span class="line">	<span class="keyword">case</span> invalid(<span class="type">String</span>, <span class="type">Any</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Restaurant</span> </span>&#123;</span><br><span class="line">	<span class="keyword">init</span>(json: [<span class="type">String</span>: <span class="type">Any</span>]) <span class="keyword">throws</span> &#123;</span><br><span class="line">		<span class="comment">// Extract name</span></span><br><span class="line">        <span class="comment">// 提取 name</span></span><br><span class="line">		<span class="keyword">guard</span> <span class="keyword">let</span> name = json[<span class="string">"name"</span>] <span class="keyword">as</span>? <span class="type">String</span> <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="type">SerializationError</span>.missing(<span class="string">"name"</span>)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Extract and validate coordinates</span></span><br><span class="line">        <span class="comment">// 提取并验证 coordinates</span></span><br><span class="line">		<span class="keyword">guard</span> <span class="keyword">let</span> coordinatesJSON = json[<span class="string">"coordinates"</span>] <span class="keyword">as</span>? [<span class="type">String</span>: <span class="type">Double</span>],</span><br><span class="line">			<span class="keyword">let</span> latitude = coordinatesJSON[<span class="string">"lat"</span>],</span><br><span class="line">			<span class="keyword">let</span> longitude = coordinatesJSON[<span class="string">"lng"</span>]</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="type">SerializationError</span>.missing(<span class="string">"coordinates"</span>)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">let</span> coordinates = (latitude, longitude)</span><br><span class="line">		<span class="keyword">guard</span> <span class="keyword">case</span> (-<span class="number">90</span>...<span class="number">90</span>, -<span class="number">180</span>...<span class="number">180</span>) = coordinates <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="type">SerializationError</span>.invalid(<span class="string">"coordinates"</span>, coordinates)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Extract and validate meals</span></span><br><span class="line">        <span class="comment">// 提取并验证 meals </span></span><br><span class="line">		<span class="keyword">guard</span> <span class="keyword">let</span> mealsJSON = json[<span class="string">"meals"</span>] <span class="keyword">as</span>? [<span class="type">String</span>] <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="type">SerializationError</span>.missing(<span class="string">"meals"</span>)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">var</span> meals: <span class="type">Set</span>&lt;<span class="type">Meal</span>&gt; = []</span><br><span class="line">		<span class="keyword">for</span> string <span class="keyword">in</span> mealsJSON &#123;</span><br><span class="line">			<span class="keyword">guard</span> <span class="keyword">let</span> meal = <span class="type">Meal</span>(rawValue: string) <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">throw</span> <span class="type">SerializationError</span>.invalid(<span class="string">"meals"</span>, string)</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			meals.insert(meal)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Initialize properties</span></span><br><span class="line">        <span class="comment">// 初始化（本类的）属性</span></span><br><span class="line">		<span class="keyword">self</span>.name = name</span><br><span class="line">		<span class="keyword">self</span>.coordinates = coordinates</span><br><span class="line">		<span class="keyword">self</span>.meals = meals</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里，<code>Restaurant</code> 类型声明了一个嵌套的 <code>SerializationError</code> 类型，它定义了几个跟值的丢失或无效的属性相关联的枚举 case 。在有 throwing 版本的 JSON 的初始化器中，不同于通过返回 <code>nil</code> 来表明失败，其抛出的错误都会传达具体的失败（原因）。这个版本也执行了对输入数据的有效验证来确保 <code>coordinates</code> 代表一个有效的地理坐标对，JSON 中具体指明的 <code>meals</code> 的每个名称，和 <code>Meal</code> 的枚举 case 相对应。</p>
+<h2 id="编写一个类方法来接取结果"><a href="#编写一个类方法来接取结果" class="headerlink" title="编写一个类方法来接取结果"></a>编写一个类方法来接取结果</h2><p>Web 应用程序端点经常在单个的 JSON 响应中返回多个资源。举例来说，一个 <code>/search</code> 端点可能返回〇个或多个 restaurant ，以匹配请求的查询参数，包括这些附加了其他元数据的 representation ：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"query"</span>: <span class="string">"sandwich"</span>,</span><br><span class="line">	<span class="attr">"results_count"</span>: <span class="number">12</span>,</span><br><span class="line">	<span class="attr">"page"</span>: <span class="number">1</span>,</span><br><span class="line">	<span class="attr">"results"</span>: [</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="attr">"name"</span>: <span class="string">"Caffè Macs"</span>,</span><br><span class="line">			<span class="attr">"coordinates"</span>: &#123;</span><br><span class="line">				<span class="attr">"lat"</span>: <span class="number">37.330576</span>,</span><br><span class="line">				<span class="attr">"lng"</span>: <span class="number">-122.029739</span></span><br><span class="line">			&#125;,</span><br><span class="line">			<span class="attr">"meals"</span>: [<span class="string">"breakfast"</span>, <span class="string">"lunch"</span>, <span class="string">"dinner"</span>]</span><br><span class="line">		&#125;,</span><br><span class="line">		...</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你可以在 <code>Restaurant</code> 结构体中创建一个类方法，将 <code>query</code> 方法的参数转换成对应的请求对象，然后发送 HTTP 请求到 web 服务（端点）。这段代码也负责处理响应，反序列化 JSON 数据，用 <code>&quot;results&quot;</code> 数组中提取出来的字典创建 <code>Restaurant</code> 对象，并且在完成的 handler 中异步地返回它们。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Restaurant</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">let</span> urlComponents: <span class="type">URLComponents</span> <span class="comment">// base URL components of the web service</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">let</span> session: <span class="type">URLSession</span> <span class="comment">// shared session for interacting with the web service</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">restaurants</span><span class="params">(matching query: String, completion: <span class="params">([Restaurant])</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">		<span class="keyword">var</span> searchURLComponents = urlComponents</span><br><span class="line">		searchURLComponents.path = <span class="string">"/search"</span></span><br><span class="line">		searchURLComponents.queryItems = [<span class="type">URLQueryItem</span>(name: <span class="string">"q"</span>, value: query)]</span><br><span class="line">		<span class="keyword">let</span> searchURL = searchURLComponents.url!</span><br><span class="line"></span><br><span class="line">		session.dataTask(url: searchURL, completion: &#123; (<span class="number">_</span>, <span class="number">_</span>, data, <span class="number">_</span>)</span><br><span class="line">			<span class="keyword">var</span> restaurants: [<span class="type">Restaurant</span>] = []</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> <span class="keyword">let</span> data = data,</span><br><span class="line">				<span class="keyword">let</span> json = <span class="keyword">try</span>? <span class="type">JSONSerialization</span>.jsonObject(with: data, options: []) <span class="keyword">as</span>? [<span class="type">String</span>: <span class="type">Any</span>] &#123;</span><br><span class="line">				<span class="keyword">for</span> <span class="keyword">case</span> <span class="keyword">let</span> result <span class="keyword">in</span> json[<span class="string">"results"</span>] &#123;</span><br><span class="line">					<span class="keyword">if</span> <span class="keyword">let</span> restaurant = <span class="type">Restaurant</span>(json: result) &#123;</span><br><span class="line">						restaurants.append(restaurant)</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			completion(restaurants)</span><br><span class="line">		&#125;).resume()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当用户在搜索 bar 中输入文本时，视图控制器就能调用这个方法，来填入（populate）一个列表视图——其中是匹配的餐馆。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> UIKit</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">ViewController</span>: <span class="title">UISearchResultsUpdating</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">func</span> <span class="title">updateSearchResultsForSearchController</span><span class="params">(<span class="number">_</span> searchController: UISearchController)</span></span> &#123;</span><br><span class="line">		<span class="keyword">if</span> <span class="keyword">let</span> query = searchController.searchBar.text, !query.isEmpty &#123;</span><br><span class="line">			<span class="type">Restaurant</span>.restaurants(matching: query) &#123; restaurants <span class="keyword">in</span></span><br><span class="line">				<span class="keyword">self</span>.restaurants = restaurants</span><br><span class="line">				<span class="keyword">self</span>.tableView.reloadData()</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用这种关注点分离的方式，在视图控制器中提供了一个恒定不变的界面来获取餐馆资源，即便 web 服务中的实现细节变化时。</p>
+<h2 id="对反射机制的反思"><a href="#对反射机制的反思" class="headerlink" title="对反射机制的反思"></a>对反射机制的反思</h2><p>为了在不同的系统中进行通信，把同样的数据转换成各种 representation ，对编写软件来说，是一件繁琐但却有必要的任务。<br>因为这些 representation 的结构可能是很类似的，那就也许会尝试来创建一个更高层级的抽象（策略），以在这些不同的 representation 之间自动地映射。比方说，有一个类型可能定义了一种映射关系，在 <code>snake_case</code> 的 JSON 键值和 <code>camelCase</code> 的属性名称之间，以使用 Swift 的反射 API ——如 <code>Mirror</code> ——自动地从 JSON 初始化一个 model 。<br>然而，我们发现，同使用 Swift 语言功能的常规用法相比，这类抽象（策略）并不倾向于能提供可观的好处，反而使得调试问题或处理极端情况变得更难。在上面的例子中，初始化器不仅从 JSON 提取并映射了值，也初始化了复杂的数据类型并且执行了具体域的输入有效性验证。基于反射机制的方法可能得费尽周折才能完成所有的这些任务。当为你自己的 app 评估可用的策略时，请记住这一点。少量的重复所花费的成本可能远少于挑选了不正确的抽象（策略）。</p>
+<p>译自苹果官方 <a href="https://developer.apple.com/swift/blog/?id=37" target="_blank" rel="noopener">Swift blog</a>，原博文发布日期：二〇一六年九月十二日。</p>
+<p>二〇年四月十五日 1411</p>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="https://shangleixun.github.io">尚雷勋</a>
+            <p>原文链接：<a href="https://shangleixun.github.io/2020/04/16/在 Swift 中使用 JSON/">https://shangleixun.github.io/2020/04/16/在 Swift 中使用 JSON/</a>
+            <p>发表日期：<a href="https://shangleixun.github.io/2020/04/16/在 Swift 中使用 JSON/">April 16th 2020, 10:33:59 am</a>
+            <p>更新日期：<a href="https://shangleixun.github.io/2020/04/16/在 Swift 中使用 JSON/">April 16th 2020, 10:58:16 am</a>
+            <p>版权声明：本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2019/10/31/sws_scale 函数介绍/" title= "一道排列组合题的诞生及解决">
+                    <div class="prevTitle">一道排列组合题的诞生及解决</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:leixun.shang@gmail.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="https://github.com/shangleixun" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/wechat_qr.JPG" />
+                </span>
+            
+        
+    
+        
+    
+        
+            
+                <a href="https://t.me/shangmaumau" class="iconfont-archer telegram" target="_blank" title=telegram></a>
+            
+        
+    
+        
+    
+        
+            
+                <a href="https://www.zhihu.com/people/shangmaumau" class="iconfont-archer zhihu" target="_blank" title=zhihu></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#从-JSON-中提取值"><span class="toc-number">1.</span> <span class="toc-text">从 JSON 中提取值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用从-JSON-提取的值创建-model-对象"><span class="toc-number">2.</span> <span class="toc-text">使用从 JSON 提取的值创建 model 对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编写一个可选的-JSON-初始化器"><span class="toc-number">3.</span> <span class="toc-text">编写一个可选的 JSON 初始化器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编写一个带有错误处理的-JSON-的初始化器"><span class="toc-number">4.</span> <span class="toc-text">编写一个带有错误处理的 JSON 的初始化器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编写一个类方法来接取结果"><span class="toc-number">5.</span> <span class="toc-text">编写一个类方法来接取结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对反射机制的反思"><span class="toc-number">6.</span> <span class="toc-text">对反射机制的反思</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 4
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/16</span><a class="archive-post-title" href= "/2020/04/16/在 Swift 中使用 JSON/" >在 Swift 中使用 JSON —— 翻译</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/31</span><a class="archive-post-title" href= "/2019/10/31/sws_scale 函数介绍/" >一道排列组合题的诞生及解决</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/22</span><a class="archive-post-title" href= "/2019/09/22/A 到 B 点之间一共有几种走法/" >一道排列组合题的诞生及解决</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/05</span><a class="archive-post-title" href= "/2019/09/05/简明的 GitHub 个人博客搭建教程/" >简明的 GitHub 个人博客搭建教程</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="ffmpeg"><span class="iconfont-archer">&#xe606;</span>ffmpeg</span>
+    
+        <span class="sidebar-tag-name" data-tags="blog"><span class="iconfont-archer">&#xe606;</span>blog</span>
+    
+        <span class="sidebar-tag-name" data-tags="algorithm"><span class="iconfont-archer">&#xe606;</span>algorithm</span>
+    
+        <span class="sidebar-tag-name" data-tags="swift"><span class="iconfont-archer">&#xe606;</span>swift</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "尚雷勋"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+
